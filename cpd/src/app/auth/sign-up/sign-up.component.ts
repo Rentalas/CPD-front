@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, effect, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -7,12 +7,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MAT_DATE_LOCALE, provideNativeDateAdapter} from '@angular/material/core';
+import { PasswordInputType, PasswordMatIcon } from '../constants';
 
 @Component({
   selector: 'app-sign-up',
   standalone: true,
   providers: [provideNativeDateAdapter(), {provide: MAT_DATE_LOCALE, useValue: 'en-GB'},],
-  imports: [FormsModule,
+  imports: [
+    FormsModule,
     MatFormFieldModule,
     MatInputModule,
     ReactiveFormsModule,
@@ -20,12 +22,17 @@ import {MAT_DATE_LOCALE, provideNativeDateAdapter} from '@angular/material/core'
     RouterLinkActive,
     MatIconModule,
     MatButtonModule,
-    MatDatepickerModule],
+    MatDatepickerModule,
+  ],
   templateUrl: './sign-up.component.html',
   styleUrl: './sign-up.component.scss'
 })
 export class SignUpComponent {
-  hidePassword: boolean = true;
+  hidePassword = signal(true);
+
+  passwordInputType: PasswordInputType = PasswordInputType.password;
+
+  passwordMatIcon: PasswordMatIcon = PasswordMatIcon.visibility;
 
   signUpFormGroup = new FormGroup({
     email: new FormControl('', [Validators.email, Validators.required]),
@@ -35,4 +42,15 @@ export class SignUpComponent {
     birthDate: new FormControl('', Validators.required),
   });
 
+  constructor() {
+    effect(() => {
+      if(this.hidePassword()) {
+        this.passwordInputType = PasswordInputType.password;
+        this.passwordMatIcon = PasswordMatIcon.visibility_off;
+        return
+      }
+        this.passwordInputType = PasswordInputType.text;
+        this.passwordMatIcon = PasswordMatIcon.visibility;
+    })
+  }
 }

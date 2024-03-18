@@ -1,22 +1,25 @@
-import { Component } from '@angular/core';
+import { Component, effect, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { PasswordInputType, PasswordMatIcon } from '../constants';
 
 @Component({
   selector: 'app-sign-in',
   standalone: true,
-  imports: [FormsModule,
+  imports: [
+    FormsModule,
     MatFormFieldModule,
     MatInputModule,
     ReactiveFormsModule,
     RouterLink,
     RouterLinkActive,
     MatIconModule,
-    MatButtonModule],
+    MatButtonModule
+  ],
   templateUrl: './sign-in.component.html',
   styleUrl: './sign-in.component.scss'
 })
@@ -26,6 +29,19 @@ export class SignInComponent {
     password: new FormControl('', [Validators.minLength(8), Validators.maxLength(20)])
   });
 
-  hidePassword: boolean = true;
+  hidePassword = signal(true);
+  passwordInputType: PasswordInputType = PasswordInputType.password;
+  passwordMatIcon: PasswordMatIcon = PasswordMatIcon.visibility;
 
+  constructor() {
+    effect(() => {
+      if(this.hidePassword()) {
+        this.passwordInputType = PasswordInputType.password;
+        this.passwordMatIcon = PasswordMatIcon.visibility_off;
+        return
+      }
+        this.passwordInputType = PasswordInputType.text;
+        this.passwordMatIcon = PasswordMatIcon.visibility;
+    })
+  }
 }
