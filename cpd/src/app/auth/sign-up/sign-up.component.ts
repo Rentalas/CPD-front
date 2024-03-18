@@ -7,7 +7,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MAT_DATE_LOCALE, provideNativeDateAdapter} from '@angular/material/core';
-import { PasswordInputType, PasswordMatIcon } from '../constants';
+import { PasswordIcon } from '../constants';
+import { InputType } from '../../constants';
 
 @Component({
   selector: 'app-sign-up',
@@ -30,13 +31,13 @@ import { PasswordInputType, PasswordMatIcon } from '../constants';
 export class SignUpComponent {
   hidePassword = signal(true);
 
-  passwordInputType: PasswordInputType = PasswordInputType.password;
+  passwordInputType: InputType = InputType.password;
 
-  passwordMatIcon: PasswordMatIcon = PasswordMatIcon.visibility;
+  passwordMatIcon: PasswordIcon = PasswordIcon.visibility;
 
-  signUpFormGroup = new FormGroup({
+  userData = new FormGroup({
     email: new FormControl('', [Validators.email, Validators.required]),
-    password: new FormControl('', [Validators.minLength(8), Validators.maxLength(20)]),
+    password: new FormControl('', [Validators.minLength(8), Validators.maxLength(20), Validators.required]),
     firstName: new FormControl('', Validators.required),
     lastName: new FormControl('', Validators.required),
     birthDate: new FormControl('', Validators.required),
@@ -45,12 +46,12 @@ export class SignUpComponent {
   constructor() {
     effect(() => {
       if(this.hidePassword()) {
-        this.passwordInputType = PasswordInputType.password;
-        this.passwordMatIcon = PasswordMatIcon.visibility_off;
+        this.passwordInputType = InputType.password;
+        this.passwordMatIcon = PasswordIcon.visibility_off;
         return
       }
-        this.passwordInputType = PasswordInputType.text;
-        this.passwordMatIcon = PasswordMatIcon.visibility;
+        this.passwordInputType = InputType.text;
+        this.passwordMatIcon = PasswordIcon.visibility;
     })
   }
 }

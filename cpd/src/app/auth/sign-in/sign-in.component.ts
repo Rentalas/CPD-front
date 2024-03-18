@@ -5,7 +5,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { PasswordInputType, PasswordMatIcon } from '../constants';
+import { PasswordIcon } from '../constants';
+import { InputType } from '../../constants';
 
 @Component({
   selector: 'app-sign-in',
@@ -24,24 +25,24 @@ import { PasswordInputType, PasswordMatIcon } from '../constants';
   styleUrl: './sign-in.component.scss'
 })
 export class SignInComponent {
-  signInFormGroup = new FormGroup({
-    email: new FormControl('', Validators.email),
-    password: new FormControl('', [Validators.minLength(8), Validators.maxLength(20)])
+  data = new FormGroup({
+    email: new FormControl('', [Validators.email, Validators.required]),
+    password: new FormControl('', [Validators.minLength(8), Validators.maxLength(20), Validators.required])
   });
 
   hidePassword = signal(true);
-  passwordInputType: PasswordInputType = PasswordInputType.password;
-  passwordMatIcon: PasswordMatIcon = PasswordMatIcon.visibility;
+  passwordInputType: InputType = InputType.password;
+  passwordMatIcon: PasswordIcon = PasswordIcon.visibility;
 
   constructor() {
     effect(() => {
       if(this.hidePassword()) {
-        this.passwordInputType = PasswordInputType.password;
-        this.passwordMatIcon = PasswordMatIcon.visibility_off;
+        this.passwordInputType = InputType.password;
+        this.passwordMatIcon = PasswordIcon.visibility_off;
         return
       }
-        this.passwordInputType = PasswordInputType.text;
-        this.passwordMatIcon = PasswordMatIcon.visibility;
+        this.passwordInputType = InputType.text;
+        this.passwordMatIcon = PasswordIcon.visibility;
     })
   }
 }
