@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { PasswordIcon } from '../constants';
 import { InputType } from '../../constants';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-sign-in',
@@ -31,18 +32,29 @@ export class SignInComponent {
   });
 
   hidePassword = signal(true);
-  passwordInputType: InputType = InputType.password;
-  passwordMatIcon: PasswordIcon = PasswordIcon.visibility;
 
-  constructor() {
+  signIn: () => void;
+
+  passwordInputType: InputType = InputType.password;
+
+  passwordIcon: PasswordIcon = PasswordIcon.visibility;
+
+  constructor(private authService: AuthService) {
     effect(() => {
       if(this.hidePassword()) {
         this.passwordInputType = InputType.password;
-        this.passwordMatIcon = PasswordIcon.visibility_off;
+        this.passwordIcon = PasswordIcon.visibility_off;
         return
       }
         this.passwordInputType = InputType.text;
-        this.passwordMatIcon = PasswordIcon.visibility;
+        this.passwordIcon = PasswordIcon.visibility;
+    })
+
+    this.signIn = (() => {
+        this.authService.signIn({
+        email: this.data.controls.email.value,
+        password: this.data.controls.password.value,
+      })
     })
   }
 }
