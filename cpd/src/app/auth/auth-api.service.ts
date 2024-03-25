@@ -1,18 +1,19 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { SignInData, User, UserData } from '../abstraction';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthApiService {
+  http = inject(HttpClient);
 
-  constructor(private http: HttpClient) { }
-
-  signIn(userData) {
-    return this.http.post('./sign-in', userData)
+  signIn(signInData: SignInData): Observable<User> {
+    return this.http.post<User>('./sign-in', signInData);
   }
 
-  signUp(userData) {
-    return this.http.post('./sign-up', userData)
+  signUp(userData: UserData): Observable<User> {
+    return this.http.post<User>('./sign-up', userData);
   }
 }

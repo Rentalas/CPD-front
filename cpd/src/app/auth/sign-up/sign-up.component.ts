@@ -10,6 +10,8 @@ import {MAT_DATE_LOCALE, provideNativeDateAdapter} from '@angular/material/core'
 import { PasswordIcon } from '../constants';
 import { InputType } from '../../constants';
 import { AuthService } from '../auth.service';
+import { Nullable } from '../../abstraction';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-sign-up',
@@ -32,7 +34,7 @@ import { AuthService } from '../auth.service';
 export class SignUpComponent {
   hidePassword = signal(true);
 
-  signUp: () => void;
+  signUp = signal<Nullable<Event>>(null)
 
   passwordInputType: InputType = InputType.password;
 
@@ -58,15 +60,22 @@ export class SignUpComponent {
         this.passwordIcon = PasswordIcon.visibility;
     })
 
-    this.signUp = (() => {
-      this.authService.signUp({
-      email: this.userData.controls.email.value,
-      password: this.userData.controls.password.value,
-      firstName: this.userData.controls.password.value,
-      lastName: this.userData.controls.password.value,
-      birthDate: this.userData.controls.password.value,
-      phoneNumber: this.userData.controls.password.value,
+    effect(() => {
+      if(!this.signUp()) {
+        return;
+      }
+      
+      const { email, password, firstName, lastName, birthDate, phoneNumber } = this.userData.controls;
+      const userData = {
+        email: email.value as string,
+        password: password.value as string,
+        firstName: firstName.value as string,
+        lastName: lastName.value as string,
+        birthDate: birthDate.value as string,
+        phoneNumber: phoneNumber.value as string
+      };
+
+      this.authService.signUp(userData).pipe(take(1)).subscribe();
     })
-  })
   }
 }

@@ -17,7 +17,7 @@
     <mat-error>Пароль занадто короткий!</mat-error>
   </mat-form-field>
 
-  <button class="full-width" mat-raised-button color="primary" (click)="signIn()">Увійти</button>
+  <button class="full-width" mat-raised-button color="primary" (click)="signIn.set($event)">Увійти</button>
 
   <div class="full-width text-center">Ще не маєте аккаунту? <a routerLink="/sign-up">Зареєструйтесь.</a>
   </div>

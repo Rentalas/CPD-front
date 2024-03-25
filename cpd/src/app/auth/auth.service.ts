@@ -1,27 +1,29 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthApiService } from './auth-api.service';
 import { of, Observable } from 'rxjs'
 import { tap, catchError, map } from 'rxjs/operators'
 import { LoggerService } from '../logger.service';
-import { Nullable } from '../abstraction';
+import { SignInData, UserData } from '../abstraction';
+import { AUTH_TOKEN } from './constants';
+import { UserService } from '../user.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  isAuthorized = false;
+  isAuth = false;
+  authApiService = inject(AuthApiService);
+  router = inject(Router);
+  loggerService = inject(LoggerService);
+  userService = inject(UserService);
 
-  constructor(
-    private authApiService: AuthApiService,
-    private router: Router,
-    private loggerService: LoggerService,
-    ) { }
-
-  signIn(userData: Record<string, Nullable<string>>): Observable<boolean> {
-    return this.authApiService.signIn(userData).pipe(
-      tap((response) => {
-        this.router.navigate(['http://localhost:4200/account']);
+  signIn(signInData: SignInData): Observable<boolean> {
+    return this.authApiService.signIn(signInData)
+    .pipe(
+      tap((user) => {
+        this.userService.setUser(user);
+        this.router.navigate(['./account']);
       }),
       map(() => true),
       catchError((error) => {
@@ -31,10 +33,11 @@ export class AuthService {
     );
   }
 
-  signUp(userData: Record<string, Nullable<string | number>>): Observable<boolean> {
-    return this.authApiService.signIn(userData).pipe(
-      tap((response) => {
-        this.router.navigate(['http://localhost:4200/account']);
+  signUp(userData: UserData): Observable<boolean> {
+    return this.authApiService.signUp(userData).pipe(
+      tap((user) => {
+        this.userService.setUser(user);
+        this.router.navigate(['./account']);
       }),
       map(() => true),
       catchError((error) => {
@@ -45,7 +48,7 @@ export class AuthService {
   }
 
   //TODO improve
-  private checkAuthorization(): boolean {
-    return Boolean(localStorage.getItem('authToken'));
+  private checkAuth(): boolean {
+    return Boolean(localStorage.getItem(AUTH_TOKEN));
   }
 }

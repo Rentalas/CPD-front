@@ -8,6 +8,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { PasswordIcon } from '../constants';
 import { InputType } from '../../constants';
 import { AuthService } from '../auth.service';
+import { Nullable } from '../../abstraction';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-sign-in',
@@ -33,7 +35,7 @@ export class SignInComponent {
 
   hidePassword = signal(true);
 
-  signIn: () => void;
+  signIn = signal<Nullable<Event>>(null);
 
   passwordInputType: InputType = InputType.password;
 
@@ -50,11 +52,18 @@ export class SignInComponent {
         this.passwordIcon = PasswordIcon.visibility;
     })
 
-    this.signIn = (() => {
-        this.authService.signIn({
-        email: this.data.controls.email.value,
-        password: this.data.controls.password.value,
-      })
+    effect(() => {
+      if(!this.signIn()) {
+        return;
+      }
+
+      const {email, password} = this.data.controls;
+      const data = {
+        email: email.value as string,
+        password: password.value as string,
+      };
+
+      this.authService.signIn(data).pipe(take(1)).subscribe();
     })
   }
 }
