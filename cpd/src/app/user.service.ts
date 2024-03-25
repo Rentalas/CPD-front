@@ -9,6 +9,5 @@ export class UserService {
 
   setUser(data: User): void {
     this.user = data;
-    console.log(this.user);
   }
 }
