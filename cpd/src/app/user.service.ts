@@ -5,9 +5,13 @@ import { User } from './abstraction';
   providedIn: 'root'
 })
 export class UserService {
-  user: User;
+  private _user;
+
+  get user(): User {
+    return this._user
+  }
 
   setUser(data: User): void {
-    this.user = data;
+    this._user = data;
   }
 }

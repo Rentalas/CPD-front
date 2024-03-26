@@ -1,4 +1,4 @@
-import { Component, effect, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -16,7 +16,10 @@ import { take } from 'rxjs';
 @Component({
   selector: 'app-sign-up',
   standalone: true,
-  providers: [provideNativeDateAdapter(), {provide: MAT_DATE_LOCALE, useValue: 'en-GB'},],
+  providers: [
+    provideNativeDateAdapter(),
+    {provide: MAT_DATE_LOCALE, useValue: 'en-GB'},
+  ],
   imports: [
     FormsModule,
     MatFormFieldModule,
@@ -32,6 +35,8 @@ import { take } from 'rxjs';
   styleUrl: './sign-up.component.scss'
 })
 export class SignUpComponent {
+  private authService = inject(AuthService);
+
   hidePassword = signal(true);
 
   signUp = signal<Nullable<Event>>(null)
@@ -49,7 +54,7 @@ export class SignUpComponent {
     phoneNumber: new FormControl('', Validators.required),
   });
 
-  constructor(private authService: AuthService) {
+  constructor() {
     effect(() => {
       if(this.hidePassword()) {
         this.passwordInputType = InputType.password;
@@ -64,7 +69,7 @@ export class SignUpComponent {
       if(!this.signUp()) {
         return;
       }
-      
+
       const { email, password, firstName, lastName, birthDate, phoneNumber } = this.userData.controls;
       const userData = {
         email: email.value as string,

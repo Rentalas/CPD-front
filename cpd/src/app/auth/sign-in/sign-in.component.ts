@@ -1,4 +1,4 @@
-import { Component, effect, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -28,6 +28,8 @@ import { take } from 'rxjs';
   styleUrl: './sign-in.component.scss'
 })
 export class SignInComponent {
+  private authService = inject(AuthService);
+
   data = new FormGroup({
     email: new FormControl('', [Validators.email, Validators.required]),
     password: new FormControl('', [Validators.minLength(8), Validators.maxLength(20), Validators.required])
@@ -41,7 +43,7 @@ export class SignInComponent {
 
   passwordIcon: PasswordIcon = PasswordIcon.visibility;
 
-  constructor(private authService: AuthService) {
+  constructor() {
     effect(() => {
       if(this.hidePassword()) {
         this.passwordInputType = InputType.password;

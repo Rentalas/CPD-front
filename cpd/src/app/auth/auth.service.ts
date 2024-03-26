@@ -4,26 +4,28 @@ import { AuthApiService } from './auth-api.service';
 import { of, Observable } from 'rxjs'
 import { tap, catchError, map } from 'rxjs/operators'
 import { LoggerService } from '../logger.service';
-import { SignInData, UserData } from '../abstraction';
-import { AUTH_TOKEN } from './constants';
+import { UserData } from '../abstraction';
+import { ACCOUNT_ROUTE, AUTH_TOKEN } from './constants';
 import { UserService } from '../user.service';
+import { SignInData } from './abstraction';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private authApiService = inject(AuthApiService);
+  private router = inject(Router);
+  private loggerService = inject(LoggerService);
+  private userService = inject(UserService);
+
   isAuth = false;
-  authApiService = inject(AuthApiService);
-  router = inject(Router);
-  loggerService = inject(LoggerService);
-  userService = inject(UserService);
 
   signIn(signInData: SignInData): Observable<boolean> {
     return this.authApiService.signIn(signInData)
     .pipe(
       tap((user) => {
         this.userService.setUser(user);
-        this.router.navigate(['./account']);
+        this.router.navigate([ACCOUNT_ROUTE]);
       }),
       map(() => true),
       catchError((error) => {
@@ -37,7 +39,7 @@ export class AuthService {
     return this.authApiService.signUp(userData).pipe(
       tap((user) => {
         this.userService.setUser(user);
-        this.router.navigate(['./account']);
+        this.router.navigate([ACCOUNT_ROUTE]);
       }),
       map(() => true),
       catchError((error) => {
