@@ -1,5 +1,11 @@
-import { Component, effect, signal } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, effect, inject, signal } from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { RouterLink, RouterLinkActive } from '@angular/router';
@@ -7,6 +13,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { PasswordIcon } from '../constants';
 import { InputType } from '../../constants';
+import { AuthService } from '../auth.service';
+import { Nullable } from '../../abstraction';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-sign-in',
@@ -19,30 +28,54 @@ import { InputType } from '../../constants';
     RouterLink,
     RouterLinkActive,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
   ],
   templateUrl: './sign-in.component.html',
-  styleUrl: './sign-in.component.scss'
+  styleUrl: './sign-in.component.scss',
 })
 export class SignInComponent {
+  private authService = inject(AuthService);
+
   data = new FormGroup({
     email: new FormControl('', [Validators.email, Validators.required]),
-    password: new FormControl('', [Validators.minLength(8), Validators.maxLength(20), Validators.required])
+    password: new FormControl('', [
+      Validators.minLength(8),
+      Validators.maxLength(20),
+      Validators.required,
+    ]),
   });
 
   hidePassword = signal(true);
+
+  signIn = signal<Nullable<Event>>(null);
+
   passwordInputType: InputType = InputType.password;
-  passwordMatIcon: PasswordIcon = PasswordIcon.visibility;
+
+  passwordIcon: PasswordIcon = PasswordIcon.visibility;
 
   constructor() {
     effect(() => {
-      if(this.hidePassword()) {
+      if (this.hidePassword()) {
         this.passwordInputType = InputType.password;
-        this.passwordMatIcon = PasswordIcon.visibility_off;
-        return
+        this.passwordIcon = PasswordIcon.visibility_off;
+        return;
       }
-        this.passwordInputType = InputType.text;
-        this.passwordMatIcon = PasswordIcon.visibility;
-    })
+      this.passwordInputType = InputType.text;
+      this.passwordIcon = PasswordIcon.visibility;
+    });
+
+    effect(() => {
+      if (!this.signIn()) {
+        return;
+      }
+
+      const { email, password } = this.data.controls;
+      const data = {
+        email: email.value as string,
+        password: password.value as string,
+      };
+
+      this.authService.signIn(data).pipe(take(1)).subscribe();
+    });
   }
 }
