@@ -1,5 +1,11 @@
 import { Component, effect, inject, signal } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { RouterLink, RouterLinkActive } from '@angular/router';
@@ -22,17 +28,21 @@ import { take } from 'rxjs';
     RouterLink,
     RouterLinkActive,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
   ],
   templateUrl: './sign-in.component.html',
-  styleUrl: './sign-in.component.scss'
+  styleUrl: './sign-in.component.scss',
 })
 export class SignInComponent {
   private authService = inject(AuthService);
 
   data = new FormGroup({
     email: new FormControl('', [Validators.email, Validators.required]),
-    password: new FormControl('', [Validators.minLength(8), Validators.maxLength(20), Validators.required])
+    password: new FormControl('', [
+      Validators.minLength(8),
+      Validators.maxLength(20),
+      Validators.required,
+    ]),
   });
 
   hidePassword = signal(true);
@@ -45,27 +55,27 @@ export class SignInComponent {
 
   constructor() {
     effect(() => {
-      if(this.hidePassword()) {
+      if (this.hidePassword()) {
         this.passwordInputType = InputType.password;
         this.passwordIcon = PasswordIcon.visibility_off;
-        return
+        return;
       }
-        this.passwordInputType = InputType.text;
-        this.passwordIcon = PasswordIcon.visibility;
-    })
+      this.passwordInputType = InputType.text;
+      this.passwordIcon = PasswordIcon.visibility;
+    });
 
     effect(() => {
-      if(!this.signIn()) {
+      if (!this.signIn()) {
         return;
       }
 
-      const {email, password} = this.data.controls;
+      const { email, password } = this.data.controls;
       const data = {
         email: email.value as string,
         password: password.value as string,
       };
 
       this.authService.signIn(data).pipe(take(1)).subscribe();
-    })
+    });
   }
 }

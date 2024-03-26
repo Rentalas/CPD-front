@@ -31,7 +31,7 @@
 
   <mat-form-field class="full-width form-field-with-hint">
     <mat-label>Дата народження:</mat-label>
-    <input matInput [matDatepicker]="picker">
+    <input matInput [matDatepicker]="picker" formControlName="birthDate">
     <mat-hint>DD/MM/YYYY</mat-hint>
     <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-datepicker #picker></mat-datepicker>
@@ -39,9 +39,10 @@
 
   <mat-form-field class="full-width">
     <mat-label>Номер Телефону(Батьків)</mat-label>
-    <input type="text" matInput formControlName="lastName">
+    <input type="text" matInput formControlName="phoneNumber">
     <mat-error>Введіть номер телефону</mat-error>
   </mat-form-field>
 
-  <button class="full-width" mat-raised-button color="primary" (click)="signUp.set($event)">Зареєструватися</button>
+  <button class="full-width" mat-raised-button color="primary" (click)="signUp.set($event)"
+    [disabled]="!userData.valid">Зареєструватися</button>
 </form>

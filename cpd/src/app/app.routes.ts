@@ -5,8 +5,8 @@ import { HomePageComponent } from './home-page/home-page.component';
 import { AccountComponent } from './account/account.component';
 
 export const routes: Routes = [
-    {path: '', component: HomePageComponent},
-    {path: 'sign-in', component: SignInComponent},
-    {path: 'sign-up', component: SignUpComponent},
-    {path: 'account', component: AccountComponent}
+  { path: '', component: HomePageComponent },
+  { path: 'sign-in', component: SignInComponent },
+  { path: 'sign-up', component: SignUpComponent },
+  { path: 'account', component: AccountComponent },
 ];
